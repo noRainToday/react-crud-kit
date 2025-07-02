@@ -1,6 +1,6 @@
 {
   "name": "react-crud-kit",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "dist/index.cjs",
   "module": "dist/index.esm.js",
   "types": "dist/types/index.d.ts",
@@ -10,12 +10,17 @@
   "scripts": {
     "build": "rollup -c"
   },
-  "keywords": ["react", "antd", "crud", "component"],
+  "keywords": [
+    "react",
+    "antd",
+    "crud",
+    "component"
+  ],
   "license": "MIT",
   "author": "lxl-crud-kit",
-   "repository": {
+  "repository": {
     "type": "git",
-    "url": "https://github.com/你的仓库地址.git"
+    "url": "https://github.com/noRainToday/react-crud-kit.git/"
   },
   "packageManager": "pnpm@10.11.0",
   "peerDependencies": {
@@ -26,8 +31,7 @@
   "dependencies": {
     "antd": "^5.26.3",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0",
-    "tslib": "^2.8.1"
+    "react-dom": "^19.1.0"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^28.0.6",
@@ -38,6 +42,7 @@
     "@types/react-dom": "^19.1.6",
     "rollup": "^4.44.1",
     "rollup-plugin-peer-deps-external": "^2.2.4",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "tslib": "^2.8.1"
   }
 }
