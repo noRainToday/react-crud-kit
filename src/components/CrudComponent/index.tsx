@@ -9,25 +9,20 @@ import {
   Switch,
   Radio,
   Checkbox,
-  message,
   Space,
   Col,
 } from "antd";
+import UploadPicture from "../UploadPicture";
+import UploadFileList from "../UploadFileList";
+import DatePicker from "../ADatePicker";
 import type { ColumnsType } from "antd/es/table";
-import type {
-  CrudProps,
-  FieldSchema,
-  CrudExposeMethods,
-} from "../../types";
+import type { ICrudProps, FieldSchema, CrudExposeMethods } from "../../types";
 
-const CrudComponent = forwardRef<CrudExposeMethods, CrudProps>(
+const CrudComponent = forwardRef<CrudExposeMethods, ICrudProps>(
   (
     {
-      schema,
+      option,
       primaryKey = "id",
-      title,
-      showAddButton = true,
-      addButtonText = "新增",
       listData = [],
       loading,
       pagination,
@@ -41,31 +36,32 @@ const CrudComponent = forwardRef<CrudExposeMethods, CrudProps>(
     const [form] = Form.useForm();
     const [searchForm] = Form.useForm();
     const [modalOpen, setModalOpen] = useState(false);
+    const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
     const [editingRecord, setEditingRecord] = useState<any | null>(null);
     const handleSubmit = async () => {
       const values = await form.validateFields();
       try {
         if (editingRecord) {
-          await onUpdate(values);
-          message.success("更新成功");
+          await onUpdate({
+            ...values,
+            [primaryKey]: editingRecord[primaryKey],
+          });
         } else {
           await onAdd(values);
-          message.success("新增成功");
         }
         setModalOpen(false);
         form.resetFields();
         setEditingRecord(null);
       } catch (e) {
         console.error(e);
-        message.error("操作失败");
       }
     };
 
     const handleDelete = async (record: any) => {
       await onDelete([record[primaryKey]]);
-      message.success("删除成功");
     };
     const editRecord = (record: any) => {
+      console.log("record", record);
       setEditingRecord(record);
       form.setFieldsValue(record);
       setModalOpen(true);
@@ -77,7 +73,6 @@ const CrudComponent = forwardRef<CrudExposeMethods, CrudProps>(
         ...field.props,
         placeholder: baseProps?.placeholder || `请输入${field.label}`,
       };
-
       switch (field.type) {
         case "input":
           return <Input {...commonProps} />;
@@ -105,6 +100,63 @@ const CrudComponent = forwardRef<CrudExposeMethods, CrudProps>(
           return <Checkbox.Group options={field.options} {...commonProps} />;
         case "switch":
           return <Switch {...field.props} />;
+        case "datePicker": {
+          return <DatePicker {...commonProps} />;
+        }
+        case "uploadPicture": {
+          const {
+            action = "",
+            propsHttp = {
+              res: "data",
+              url: "url",
+              name: "name",
+            },
+            headers,
+            multiple = false,
+            maxCount = 2,
+          } = field.fileUpload!;
+          return (
+            <UploadPicture
+              action={action}
+              propsHttp={propsHttp}
+              headers={headers}
+              multiple={multiple}
+              maxCount={maxCount}
+              onUploadSuccess={(fileData) => {
+                form.setFieldsValue({
+                  [field.name]: fileData,
+                });
+              }}
+            />
+          );
+        }
+        case "uploadFile": {
+          const {
+            action = "",
+            propsHttp = {
+              res: "data",
+              url: "url",
+              name: "name",
+            },
+            headers,
+            multiple = false,
+            maxCount = 2,
+          } = field.fileUpload!;
+          return (
+            <UploadFileList
+              action={action}
+              propsHttp={propsHttp}
+              headers={headers}
+              multiple={multiple}
+              maxCount={maxCount}
+              onUploadSuccess={(fileData) => {
+                form.setFieldsValue({
+                  [field.name]: fileData,
+                });
+              }}
+            />
+          );
+        }
         default:
           return <Input {...commonProps} />;
       }
@@ -112,52 +164,82 @@ const CrudComponent = forwardRef<CrudExposeMethods, CrudProps>(
     /**
      * 生成table需要的columns
      */
-    const columns: ColumnsType<any> = schema
-      .filter((s) => s.table?.show)
+    const columns: ColumnsType<any> = option.columns
+      ?.filter(({ table }) => table?.show)
       .map((s) => {
-        if (s.table?.isActionColumn) {
-          return {
-            title: s.label,
-            key: "actions",
-            render: (_: any, record: any) => {
-              const { table } = s;
-              if (table?.render) return table.render(record);
-              return (
-                <Space>
-                  {table?.showEdit && (
-                    <a onClick={() => editRecord(record)}>
-                      <Button type={table?.editButtonType || "primary"}>
+        const { name, label, type, options, dataType, table = {} } = s;
+
+        const commonProps = {
+          title: label,
+          key: name,
+          dataIndex: name,
+        };
+
+        switch (true) {
+          case !!table.render:
+            return {
+              ...commonProps,
+              render: table.render,
+            };
+
+          case type === "select":
+            return {
+              ...commonProps,
+              render: (value: any) => (
+                <Select options={options} value={value} disabled />
+              ),
+            };
+
+          case type === "switch":
+            return {
+              ...commonProps,
+              render: (value: any) => <Switch checked={value} disabled />,
+            };
+
+          case table.isActionColumn:
+            return {
+              title: label,
+              key: "actions",
+              render: (_: any, record: any) => {
+                if (table.render) return table.render(_, record);
+                return (
+                  <Space>
+                    {table.showEdit && (
+                      <Button
+                        type={table.editButtonType || "primary"}
+                        onClick={() => editRecord(record)}
+                      >
                         编辑
                       </Button>
-                    </a>
-                  )}
-                  {table?.showDelete && (
-                    <a onClick={() => handleDelete(record)}>
-                      <Button color={table?.deleteButtonColor || "danger"}>
+                    )}
+                    {table.showDelete && (
+                      <Button
+                        color={table.deleteButtonColor || "default"}
+                        type="default"
+                        onClick={() => handleDelete(record)}
+                      >
                         删除
                       </Button>
-                    </a>
-                  )}
-                </Space>
-              );
-            },
-          };
-        } else if (s.type === "switch") {
-          return {
-            title: s.label,
-            dataIndex: s.name,
-            key: s.name,
-            render: (record: any) => {
-              return <Switch checked={record} disabled />;
-            },
-          };
+                    )}
+                  </Space>
+                );
+              },
+            };
+
+          case dataType === "array" || dataType === "object":
+            console.warn(
+              `${label} 返回对象类型数据,如果需要正确展示请自行编写render函数`
+            );
+            return {
+              ...commonProps,
+              render: (value: any) => JSON.stringify(value),
+            };
+
+          default:
+            return commonProps;
         }
-        return {
-          title: s.label,
-          dataIndex: s.name,
-          key: s.name,
-        };
       });
+
     /**
      * 处理搜索，调用父组件传递的方法，把内容传递出去
      */
@@ -165,6 +247,15 @@ const CrudComponent = forwardRef<CrudExposeMethods, CrudProps>(
       const values = await searchForm.validateFields();
       console.log(" 搜索条件：values", values);
       onSearch(values);
+    };
+    const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
+      console.log("selectedRowKeys changed: ", newSelectedRowKeys);
+      setSelectedRowKeys(newSelectedRowKeys);
+    };
+    const rowSelection = {
+      type: option.checkOrRadio,
+      selectedRowKeys,
+      onChange: onSelectChange,
     };
 
     /**
@@ -192,55 +283,77 @@ const CrudComponent = forwardRef<CrudExposeMethods, CrudProps>(
 
     return (
       <div className="p-15">
-        <h2 style={{ marginBottom: 16 }}> {title}</h2>
-
         {/* 搜索区域 */}
-        <Form
-          layout="inline"
-          form={searchForm}
-          onFinish={handleSearch}
-          style={{ marginBottom: 16, width: "100%" }}
-        >
-          {schema
-            .filter((f) => f.search?.show)
-            .map((field) => (
-              <Col span={field.search?.span || 4} key={field.name}>
-                <Form.Item name={field.name} label={field.label}>
-                  {renderFormField(field, true)}
-                </Form.Item>
-              </Col>
-            ))}
-          <Col span={6}>
-            <Form.Item>
-              <Button type="primary" htmlType="submit" style={{ marginTop: 4 }}>
-                搜索
-              </Button>
+        {option?.showSearch && (
+          <Form
+            layout="inline"
+            form={searchForm}
+            onFinish={handleSearch}
+            style={{ marginBottom: 16, width: "100%" }}
+          >
+            {option.columns
+              ?.filter((f) => f.search?.show)
+              .map((field) => (
+                <Col
+                  span={field.search?.span ?? option.searchSpan ?? 4}
+                  key={field.name}
+                >
+                  <Form.Item name={field.name} label={field.label}>
+                    {renderFormField(field, true)}
+                  </Form.Item>
+                </Col>
+              ))}
+            <Col span={option?.searchSpan ?? 4}>
+              <Form.Item>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  style={{ marginTop: 4 }}
+                >
+                  搜索
+                </Button>
 
-              <Button
-                style={{ marginLeft: 10 }}
-                onClick={() => searchForm.resetFields()}
-              >
-                重置
-              </Button>
-            </Form.Item>
-          </Col>
-        </Form>
+                <Button
+                  style={{ marginLeft: 10 }}
+                  onClick={() => {
+                    searchForm.resetFields();
+                    handleSearch();
+                  }}
+                >
+                  重置
+                </Button>
+              </Form.Item>
+            </Col>
+          </Form>
+        )}
 
         {/* 表格上方操作按钮 */}
         <div>
-          {showAddButton && (
+          {option.showAddButton && (
             <Button
               type="primary"
               onClick={() => setModalOpen(true)}
               style={{ marginBottom: 16 }}
             >
-              {addButtonText}
+              {option?.addButtonText || "新增"}
+            </Button>
+          )}
+
+          {option.showBatchDeleteButton && (
+            <Button
+              color="danger"
+              variant="solid"
+              onClick={() => onDelete(selectedRowKeys)}
+              style={{ marginBottom: 16, marginLeft: 16 }}
+            >
+              {option?.batchDeleteButtonText || "批量删除"}
             </Button>
           )}
         </div>
 
         {/* 表格 */}
         <Table
+          bordered={option.bordered || true}
           columns={columns}
           dataSource={listData}
           rowKey={primaryKey}
@@ -252,16 +365,18 @@ const CrudComponent = forwardRef<CrudExposeMethods, CrudProps>(
             showSizeChanger: true,
             showQuickJumper: true,
             showTotal: (total) => `共 ${total} 条`,
-            pageSizeOptions: ["10", "20", "50", "100"],
+            pageSizeOptions: ["2", "3", "10", "20"],
             onChange: pagination.handlePageChange,
             onShowSizeChange: pagination.handleSizeChange,
           }}
+          rowSelection={option?.selection ? rowSelection : undefined}
         />
 
         {/* 弹窗表单 */}
         <Modal
+          width={800}
           open={modalOpen}
-          title={editingRecord ? `${title} 编辑` : `${title} 新增`}
+          title={editingRecord ? `编辑` : `新增`}
           onCancel={() => {
             setModalOpen(false);
             form.resetFields();
@@ -270,7 +385,7 @@ const CrudComponent = forwardRef<CrudExposeMethods, CrudProps>(
           onOk={handleSubmit}
         >
           <Form layout="vertical" form={form}>
-            {schema
+            {option?.columns
               .filter((f) => f.form?.show)
               .map((field) => (
                 <Form.Item
