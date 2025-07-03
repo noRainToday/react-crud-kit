@@ -2,14 +2,7 @@ import React, { useState, useEffect } from "react";
 import { DatePicker } from "antd";
 import type { Dayjs } from "dayjs";
 import dayjs from "dayjs";
-import type { DatePickerProps } from "antd/lib";
-
-// ✅ 自定义 props 类型：继承 antd 的 DatePickerProps，同时扩展 valueFormat
-interface ADatePickerProps extends Omit<DatePickerProps, "value" | "onChange"> {
-  value?: string;
-  valueFormat?: string;
-  onChange?: (val?: string) => void;
-}
+import type { ADatePickerProps } from "@/types/form.ts";
 
 const ADatePicker: React.FC<ADatePickerProps> = ({
   value,

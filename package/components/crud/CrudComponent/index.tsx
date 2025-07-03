@@ -12,11 +12,11 @@ import {
   Space,
   Col,
 } from "antd";
-import UploadPicture from "../UploadPicture";
-import UploadFileList from "../UploadFileList";
-import DatePicker from "../ADatePicker";
+import UploadPicture from "../../upload/UploadPicture";
+import UploadFileList from "../../upload/UploadFileList";
+import DatePicker from "../../form/ADatePicker";
 import type { ColumnsType } from "antd/es/table";
-import type { ICrudProps, FieldSchema, CrudExposeMethods } from "../../types";
+import type { ICrudProps, FieldSchema, CrudExposeMethods } from "../../../types";
 
 const CrudComponent = forwardRef<CrudExposeMethods, ICrudProps>(
   (

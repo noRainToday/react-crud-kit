@@ -1,10 +1,12 @@
 import React, { useEffect, useState, useId } from "react";
-import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
+import { InboxOutlined } from "@ant-design/icons";
 import { message, Upload } from "antd";
 import type { GetProp, UploadFile, UploadProps } from "antd";
-import type { IPropsHttp } from "../../types";
+import type { UploadPictureProps } from "@/types/upload";
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
+import { isObject } from "@/utils";
 
+const { Dragger } = Upload;
 const beforeUpload = (file: FileType) => {
   const isLt2M = file.size / 1024 / 1024 < 2;
   if (!isLt2M) {
@@ -13,18 +15,7 @@ const beforeUpload = (file: FileType) => {
   return isLt2M;
 };
 
-interface UploadPicProps {
-  action: string;
-  value?: any[];
-  onChange?: (val: UploadFile[]) => void;
-  onUploadSuccess?: (val: UploadFile[]) => void;
-  propsHttp: IPropsHttp;
-  headers?: Record<string, string>;
-  multiple?: boolean;
-  maxCount?: number;
-}
-
-const UploadPic: React.FC<UploadPicProps> = ({
+const UploadPic: React.FC<UploadPictureProps> = ({
   action,
   value,
   onChange,
@@ -34,13 +25,13 @@ const UploadPic: React.FC<UploadPicProps> = ({
   multiple = true,
   maxCount = 5,
 }) => {
-  const [loading, setLoading] = useState(false);
   const id = useId();
   const [fileList, setFileList] = useState<UploadFile[]>([]);
 
   useEffect(() => {
     console.log("value", value);
     if (typeof value === "string") {
+      console.warn("传入的内容为string类型,最好能构造为数组对象");
       setFileList([
         {
           uid: id,
@@ -48,14 +39,18 @@ const UploadPic: React.FC<UploadPicProps> = ({
           name: value,
         },
       ]);
-    } else {
+    } else if (Array.isArray(value)) {
       setFileList(value || []);
+    } else if (isObject(value)) {
+      console.warn("传入的内容为对象类型,最好能构造为数组对象");
+      setFileList([value]);
+    } else {
+      setFileList([]);
     }
   }, [value]);
 
   const handleChange: UploadProps["onChange"] = ({ file, fileList }) => {
     if (file.status === "uploading") {
-      setLoading(true);
       setFileList(fileList);
       return;
     }
@@ -81,16 +76,13 @@ const UploadPic: React.FC<UploadPicProps> = ({
       } else {
         message.error("上传失败：返回格式不正确");
       }
-      setLoading(false);
     } else if (file.status === "removed") {
       // 删除的场景
       const updatedList = fileList.filter((f) => f.uid !== file.uid);
       setFileList(updatedList);
       onChange?.(updatedList);
-      setLoading(false);
     } else if (file.status === "error") {
       message.error(`${file.name} 上传失败`);
-      setLoading(false);
     } else {
       // 其他情况，统一更新 fileList
       setFileList(fileList);
@@ -98,26 +90,31 @@ const UploadPic: React.FC<UploadPicProps> = ({
     }
   };
 
-  const uploadButton = (
-    <button style={{ border: 0, background: "none" }} type="button">
-      {loading ? <LoadingOutlined /> : <PlusOutlined />}
-    </button>
-  );
+  // const uploadButton = (
+  //   <button style={{ border: 0, background: "none" }} type="button">
+  //     {loading ? <LoadingOutlined /> : <PlusOutlined />}
+  //   </button>
+  // );
 
   return (
-    <Upload
+    <Dragger
       name="file"
-      listType="picture-card"
-      className="avatar-uploader"
       fileList={fileList}
       action={action}
       beforeUpload={beforeUpload}
       headers={headers}
       onChange={handleChange}
       showUploadList={true}
+      multiple={multiple}
+      maxCount={maxCount}
     >
-      {fileList.length < (multiple ? maxCount : 1) ? uploadButton : null}
-    </Upload>
+      <div>
+        <p className="ant-upload-drag-icon">
+          <InboxOutlined />
+        </p>
+        <p className="ant-upload-text">点击或者拖拽上传文件</p>
+      </div>
+    </Dragger>
   );
 };
 

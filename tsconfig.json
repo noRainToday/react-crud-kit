@@ -11,9 +11,34 @@
         "esModuleInterop": true,
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,
-        "importHelpers": true
+        "importHelpers": true,
+        "baseUrl": ".",
+        "paths": {
+            "@/*": [
+                "package/*"
+            ],
+            "@/components/*": [
+                "package/components/*"
+            ],
+            "@/types/*": [
+                "package/types/*"
+            ],
+            "@/utils/*": [
+                "package/utils/*"
+            ]
+        },
+        // 模块解析选项
+        "resolveJsonModule": true,
+        "allowSyntheticDefaultImports": true,
+        "strict": true,
+      
+       
     },
     "include": [
-        "src"
+        "package",
+    ],
+    "exclude": [
+        "node_modules",
+        "dist"
     ]
 }

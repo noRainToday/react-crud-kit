@@ -1,3 +1,7 @@
+import type { DataType } from './form';
+import type { IFileUpload } from './upload';
+
+// 组合字段类型
 export type FieldType =
   | "input"
   | "select"
@@ -9,37 +13,7 @@ export type FieldType =
   | "uploadPicture"
   | "uploadFile";
 
-/**
- * 配置上传文件后返回字段的映射
- * 如果返回对象不是data包裹的，需要配置res字段
- * 如果返回的链接不是url的，需要配置url字段
- * 如果返回的文件名不是name的，需要配置name字段
- */
-export interface IPropsHttp {
-  res: string;
-  url: string;
-  name: string;
-}
-export interface IFileUpload {
-  action: string; //上传的url '/api/blade-resource/oss/endpoint/put-file-attach'
-  accept?: string | string[];
-  multiple?: boolean; //多个上传
-  maxCount?: number; //最大数量
-  propsHttp?: IPropsHttp;
-  headers?: Record<string, string>; //上传的header
-}
-
 export type CheckOrRadioType = "checkbox" | "radio";
-
-export type DataType = "string" | "number" | "boolean" | "array" | "object";
-
-export const DataTypeEnum = {
-  String: "string",
-  Number: "number",
-  Array: "array",
-  Object: "object",
-  Boolean: "boolean",
-};
 
 export interface ICrudOption {
   title?: string;
@@ -74,7 +48,7 @@ export interface FieldSchema {
     editButtonType?: "primary" | "link";
     showDelete?: boolean;
     deleteButtonColor?: "danger" | "volcano" | "orange";
-    render?: (_, record: any) => React.ReactNode;
+    render?: (_:any, record: any) => React.ReactNode;
   };
   form?: {
     show?: boolean;
