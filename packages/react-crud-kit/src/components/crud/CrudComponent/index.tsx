@@ -18,6 +18,7 @@ import DatePicker from "@/components/form/ADatePicker";
 import type { ColumnsType } from "antd/es/table";
 import type { ICrudProps, FieldSchema, CrudExposeMethods } from "@/types";
 import { ModelStatus } from "@/const";
+import styles from "./index.module.css";
 
 const CrudComponent = forwardRef<CrudExposeMethods, ICrudProps>(
   (
@@ -31,6 +32,8 @@ const CrudComponent = forwardRef<CrudExposeMethods, ICrudProps>(
       onAdd,
       onUpdate,
       onDelete,
+      customAction = null,
+      customTopAction = null,
     },
     ref
   ) => {
@@ -64,7 +67,7 @@ const CrudComponent = forwardRef<CrudExposeMethods, ICrudProps>(
       const baseProps = forSearch ? field.search : field.form;
       const commonProps = {
         ...field.props,
-        disabled: modelStatus === ModelStatus.VIEW,
+        disabled: modelStatus === ModelStatus.VIEW && !forSearch,
         placeholder: baseProps?.placeholder || `请输入${field.label}`,
       };
       //判断是否自定义
@@ -161,84 +164,139 @@ const CrudComponent = forwardRef<CrudExposeMethods, ICrudProps>(
           return <Input {...commonProps} />;
       }
     };
+
+    /**
+     * 生成新增按钮 + 批量删除按钮
+     */
+
+    const generateAddAndBatchDeleteButton = () => {
+      const {
+        showAddButton = true,
+        showBatchDeleteButton = true,
+        addButtonText = "新增",
+        batchDeleteButtonText = "批量删除",
+      } = option;
+      return (
+        <div className={styles.topAction}>
+          {showAddButton && (
+            <Button type="primary" onClick={handleAdd}>
+              {addButtonText}
+            </Button>
+          )}
+
+          {showBatchDeleteButton && (
+            <Button
+              color="danger"
+              variant="solid"
+              onClick={() => onDelete(selectedRowKeys)}
+            >
+              {batchDeleteButtonText}
+            </Button>
+          )}
+
+          {customTopAction && customTopAction()}
+        </div>
+      );
+    };
+
+    /**
+     * 生成默认的操作按钮
+     */
+    const generateOperationColumn = (_: any, record: any) => {
+      const {
+        showEditButton = true,
+        showDeleteButton = true,
+        showViewButton = true,
+        editButtonText = "编辑",
+        deleteButtonText = "删除",
+        viewButtonText = "查看",
+      } = option || {};
+      return (
+        <Space>
+          {showViewButton && (
+            <Button type="primary" onClick={() => handleView(record)}>
+              {viewButtonText}
+            </Button>
+          )}
+          {showEditButton && (
+            <Button type="primary" onClick={() => handleEdit(record)}>
+              {editButtonText}
+            </Button>
+          )}
+          {showDeleteButton && (
+            <Button
+              color="danger"
+              type="default"
+              variant="solid"
+              onClick={() => handleDelete(record)}
+            >
+              {deleteButtonText}
+            </Button>
+          )}
+          {customAction?.(record)}
+        </Space>
+      );
+    };
     /**
      * 生成table需要的columns
      */
-    const columns: ColumnsType<any> = option.columns
-      ?.filter(({ table }) => table?.show)
-      .map((s) => {
-        const { name, label, type, options, dataType, table = {} } = s;
 
-        const commonProps = {
-          title: label,
-          key: name,
-          dataIndex: name,
-        };
+    const generateColumns = (): ColumnsType<any> => {
+      const columns: ColumnsType<any> = option.columns
+        ?.filter(({ table }) => table?.show)
+        .map((s) => {
+          const { name, label, type, options, dataType, table = {} } = s;
 
-        switch (true) {
-          case !!table.render:
-            return {
-              ...commonProps,
-              render: table.render,
-            };
+          const commonProps = {
+            title: label,
+            key: name,
+            dataIndex: name,
+          };
 
-          case type === "select":
-            return {
-              ...commonProps,
-              render: (value: any) => (
-                <Select options={options} value={value} disabled />
-              ),
-            };
+          switch (true) {
+            case !!table.render:
+              return {
+                ...commonProps,
+                render: table.render,
+              };
 
-          case type === "switch":
-            return {
-              ...commonProps,
-              render: (value: any) => <Switch checked={value} disabled />,
-            };
+            case type === "select":
+              return {
+                ...commonProps,
+                render: (value: any) => (
+                  <Select options={options} value={value} disabled />
+                ),
+              };
 
-          case table.isActionColumn:
-            return {
-              title: label,
-              key: "actions",
-              render: (_: any, record: any) => {
-                if (table.render) return table.render(_, record);
-                return (
-                  <Space>
-                    {table.showEdit && (
-                      <Button
-                        type={table.editButtonType || "primary"}
-                        onClick={() => handleEdit(record)}
-                      >
-                        编辑
-                      </Button>
-                    )}
-                    {table.showDelete && (
-                      <Button
-                        color={table.deleteButtonColor || "default"}
-                        type="default"
-                        onClick={() => handleDelete(record)}
-                      >
-                        删除
-                      </Button>
-                    )}
-                  </Space>
-                );
-              },
-            };
+            case type === "switch":
+              return {
+                ...commonProps,
+                render: (value: any) => <Switch checked={value} disabled />,
+              };
+            case dataType === "array" || dataType === "object":
+              console.warn(
+                `${label} 返回对象类型数据,如果需要正确展示请自行编写render函数`
+              );
+              return {
+                ...commonProps,
+                render: (value: any) => JSON.stringify(value),
+              };
 
-          case dataType === "array" || dataType === "object":
-            console.warn(
-              `${label} 返回对象类型数据,如果需要正确展示请自行编写render函数`
-            );
-            return {
-              ...commonProps,
-              render: (value: any) => JSON.stringify(value),
-            };
+            default:
+              return commonProps;
+          }
+        });
 
-          default:
-            return commonProps;
-        }
+      columns.push({
+        title: "操作",
+        key: "actions",
+        dataIndex: "action",
+        render: (_, record) => {
+          return generateOperationColumn(_, record);
+        },
       });
+      return columns;
+    };
 
     /**
      * 处理表单那些内容需要展示
@@ -286,6 +344,68 @@ const CrudComponent = forwardRef<CrudExposeMethods, ICrudProps>(
       const values = await searchForm.validateFields();
       console.log(" 搜索条件：values", values);
       onSearch(values);
+    };
+
+    /**
+     * 渲染搜索表单
+     */
+    const generateSearchForm = () => {
+      if (!option?.showSearch) return null;
+      const {
+        searchButtonText = "搜索",
+        showSearchButton = true,
+        resetButtonText = "重置",
+        showResetButton = true,
+      } = option;
+      const columns = option.columns?.filter((f) => f.search?.show);
+
+      const colItem = columns.map((field) => (
+        <Col
+          span={field.search?.span ?? option.searchSpan ?? 4}
+          key={field.name}
+        >
+          <Form.Item name={field.name} label={field.label}>
+            {renderFormField(field, true)}
+          </Form.Item>
+        </Col>
+      ));
+
+      let operate = (
+        <Col span={option?.searchSpan ?? 4}>
+          <Form.Item>
+            {showSearchButton && (
+              <Button type="primary" htmlType="submit" style={{ marginTop: 4 }}>
+                {searchButtonText}
+              </Button>
+            )}
+
+            {showResetButton && (
+              <Button
+                style={{ marginLeft: 10 }}
+                onClick={() => {
+                  searchForm.resetFields();
+                  handleSearch();
+                }}
+              >
+                {resetButtonText}
+              </Button>
+            )}
+          </Form.Item>
+        </Col>
+      );
+      
+
+      return (
+        <Form
+          layout="inline"
+          form={searchForm}
+          onFinish={handleSearch}
+          style={{ marginBottom: 16, width: "100%" }}
+        >
+          {colItem}
+          {operate}
+        </Form>
+      );
     };
     const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
       console.log("selectedRowKeys changed: ", newSelectedRowKeys);
@@ -348,77 +468,15 @@ const CrudComponent = forwardRef<CrudExposeMethods, ICrudProps>(
     return (
       <div className="p-15">
         {/* 搜索区域 */}
-        {option?.showSearch && (
-          <Form
-            layout="inline"
-            form={searchForm}
-            onFinish={handleSearch}
-            style={{ marginBottom: 16, width: "100%" }}
-          >
-            {option.columns
-              ?.filter((f) => f.search?.show)
-              .map((field) => (
-                <Col
-                  span={field.search?.span ?? option.searchSpan ?? 4}
-                  key={field.name}
-                >
-                  <Form.Item name={field.name} label={field.label}>
-                    {renderFormField(field, true)}
-                  </Form.Item>
-                </Col>
-              ))}
-            <Col span={option?.searchSpan ?? 4}>
-              <Form.Item>
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  style={{ marginTop: 4 }}
-                >
-                  搜索
-                </Button>
-
-                <Button
-                  style={{ marginLeft: 10 }}
-                  onClick={() => {
-                    searchForm.resetFields();
-                    handleSearch();
-                  }}
-                >
-                  重置
-                </Button>
-              </Form.Item>
-            </Col>
-          </Form>
-        )}
+        {generateSearchForm()}
 
         {/* 表格上方操作按钮 */}
-        <div>
-          {option.showAddButton && (
-            <Button
-              type="primary"
-              onClick={handleAdd}
-              style={{ marginBottom: 16 }}
-            >
-              {option?.addButtonText || "新增"}
-            </Button>
-          )}
-
-          {option.showBatchDeleteButton && (
-            <Button
-              color="danger"
-              variant="solid"
-              onClick={() => onDelete(selectedRowKeys)}
-              style={{ marginBottom: 16, marginLeft: 16 }}
-            >
-              {option?.batchDeleteButtonText || "批量删除"}
-            </Button>
-          )}
-        </div>
+        {generateAddAndBatchDeleteButton()}
 
         {/* 表格 */}
         <Table
           bordered={option.bordered || true}
-          columns={columns}
+          columns={generateColumns()}
           dataSource={listData}
           rowKey={primaryKey}
           loading={loading}

@@ -22,12 +22,28 @@ export interface ICrudOption {
   bordered?: boolean;
   showSearch?: boolean;
   searchSpan?: number;
+
   showAddButton?: boolean;
   addButtonText?: string;
+
   showEditButton?: boolean;
+  editButtonText?: string;
+
   showDeleteButton?: boolean;
+  deleteButtonText?: string;
+
+  showViewButton?: boolean;
+  viewButtonText?: string;
+
   showBatchDeleteButton?: boolean;
   batchDeleteButtonText?: string;
+
+  searchButtonText?:string;
+  showSearchButton?:boolean;
+
+  resetButtonText?:string;
+  showResetButton?:boolean;
+
   selection?: boolean;
   checkOrRadio?: CheckOrRadioType;
   columns: FieldSchema[];
@@ -39,18 +55,18 @@ export interface FieldSchema {
   label: string;
   dataType?: DataType;
   options?: { label: string; value: any }[];
-  props?: Record<string, any>; //需要传递到子组件的
   searchSpan?: number;
   fileUpload?: IFileUpload;
+  props?: Record<string, any>; //需要传递到子组件的
   table?: ITable;
   form?: IForm;
   search?: ISearch;
 }
 //table 配置
 export interface ITable {
-  show?: boolean;
   width?: number | string;
   isActionColumn?: boolean;
+  show?: boolean;
   showEdit?: boolean;
   editButtonType?: "primary" | "link";
   showDelete?: boolean;
@@ -83,6 +99,8 @@ export interface ICrudProps {
   onAdd: (data: any) => void;
   onUpdate: (data: any) => void;
   onDelete: (data: any) => void;
+  customAction?: (record: any) => React.ReactNode;
+  customTopAction?: () => React.ReactNode;
   pagination: IBasePagination;
 }
 //crud组件导出的方法

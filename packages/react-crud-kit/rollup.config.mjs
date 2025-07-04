@@ -3,6 +3,7 @@ import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
 import peerDepsExternal from 'rollup-plugin-peer-deps-external';
+import postcss from 'rollup-plugin-postcss';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -36,10 +37,19 @@ export default {
     // 注意：如果使用了 external，可能不需要 peerDepsExternal
     // peerDepsExternal(), // 可以注释掉这行
     resolve({
-      extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
+      extensions: ['.js', '.jsx', '.ts', '.tsx', '.json', '.css'],
       alias: {
         '@': path.resolve(__dirname, 'src'),
+        '@/types': path.resolve(__dirname, 'src/types'),
+        '@/utils': path.resolve(__dirname, 'src/utils'),
+        '@/components': path.resolve(__dirname, 'src/components'),
       },
+    }),
+    postcss({
+      modules: true,
+      extract: false,
+      minimize: true,
+      sourceMap: true
     }),
     commonjs(),
     json(),

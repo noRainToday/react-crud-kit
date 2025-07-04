@@ -18,17 +18,11 @@ import {
 const TestCrud: React.FC = () => {
   const tableOption: ICrudOption = {
     title: "活动",
-    bordered: true,
-    showAddButton: true,
-    addButtonText: "新增",
-    showBatchDeleteButton: true,
-    batchDeleteButtonText: "批量删除",
-    showEditButton: true,
-    showDeleteButton: true,
     showSearch: true,
     searchSpan: 6,
     selection: true,
     checkOrRadio: "checkbox",
+    searchButtonText: "全部搜索",
     columns: [
       {
         label: "竞赛标题",
@@ -238,46 +232,6 @@ const TestCrud: React.FC = () => {
         table: { show: true },
         search: { show: false },
       },
-      {
-        type: "custom",
-        name: "actions",
-        label: "操作",
-        table: {
-          show: true,
-          isActionColumn: true,
-          showEdit: true,
-          showDelete: true,
-          editButtonType: "primary",
-          deleteButtonColor: "danger",
-          render: (_, record: any) => {
-            return (
-              <Space>
-                <div
-                  onClick={async () => {
-                    const res = await getActiveDetail({ id: record.id });
-                    console.log(res, "res");
-                    crudRef.current?.openViewModal(res.data);
-                  }}
-                >
-                  <Button color="primary">查看</Button>
-                </div>
-                <div
-                  onClick={async () => {
-                    const res = await getActiveDetail({ id: record.id });
-                    crudRef.current?.openEditModal(res.data);
-                  }}
-                >
-                  <Button type="primary">编辑</Button>
-                </div>
-
-                <div onClick={() => deleteUsers([record.id])}>
-                  <Button color="danger">删除</Button>
-                </div>
-              </Space>
-            );
-          },
-        },
-      },
     ],
   };
 
@@ -388,6 +342,51 @@ const TestCrud: React.FC = () => {
     fetchActiveList();
   }, [fetchActiveList]);
 
+  /**
+   * 自定义操作按钮
+   */
+  const customAction = (record: any) => {
+    return (
+      <Space>
+        <div
+          onClick={async () => {
+            const res = await getActiveDetail({ id: record.id });
+            console.log(res, "res");
+            crudRef.current?.openViewModal(res.data);
+          }}
+        >
+          <Button color="primary">查看</Button>
+        </div>
+        <div
+          onClick={async () => {
+            const res = await getActiveDetail({ id: record.id });
+            crudRef.current?.openEditModal(res.data);
+          }}
+        >
+          <Button type="primary">编辑</Button>
+        </div>
+
+        <div onClick={() => deleteUsers([record.id])}>
+          <Button color="danger">删除</Button>
+        </div>
+      </Space>
+    );
+  };
+
+  const customTopAction = () => {
+    return (
+      <Space>
+        <div
+          onClick={async () => {
+            console.log("topAction");
+          }}
+        >
+          <Button color="primary">查看</Button>
+        </div>
+      </Space>
+    );
+  };
+
   return (
     <div>
       <CrudComponent
@@ -400,6 +399,8 @@ const TestCrud: React.FC = () => {
         onAdd={addUser}
         onUpdate={updateUser}
         onDelete={deleteUsers}
+        customAction={customAction}
+        customTopAction={customTopAction}
       ></CrudComponent>
     </div>
   );

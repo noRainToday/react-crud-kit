@@ -38,6 +38,12 @@ pnpm dev
 pnpm build
 ```
 
+实时编译 react-crud-kit 库：
+
+```bash
+pnpm dev:kit
+```
+
 构建所有包：
 
 ```bash
