@@ -15,27 +15,25 @@
         "baseUrl": ".",
         "paths": {
             "@/*": [
-                "package/*"
+                "src/*"
             ],
             "@/components/*": [
-                "package/components/*"
+                "src/components/*"
             ],
             "@/types/*": [
-                "package/types/*"
+                "src/types/*"
             ],
             "@/utils/*": [
-                "package/utils/*"
+                "src/utils/*"
             ]
         },
         // 模块解析选项
         "resolveJsonModule": true,
         "allowSyntheticDefaultImports": true,
         "strict": true,
-      
-       
     },
     "include": [
-        "package",
+        "src",
     ],
     "exclude": [
         "node_modules",

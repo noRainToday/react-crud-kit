@@ -2,7 +2,7 @@ import React, { useEffect, useState, useId } from "react";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import { message, Upload } from "antd";
 import type { GetProp, UploadFile, UploadProps } from "antd";
-import type { UploadPictureProps } from "../../../types";
+import type { UploadPictureProps } from "@/types";
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 
 const beforeUpload = (file: FileType) => {

@@ -13,7 +13,7 @@ const __dirname = path.dirname(__filename);
 const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf-8'));
 
 export default {
-  input: 'package/index.ts',
+  input: 'src/index.ts',
   output: [
     {
       file: pkg.module,
@@ -39,9 +39,6 @@ export default {
       extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
       alias: {
         '@': path.resolve(__dirname, 'src'),
-        '@/types': path.resolve(__dirname, 'src/types'),
-        '@/utils': path.resolve(__dirname, 'src/utils'),
-        '@/components': path.resolve(__dirname, 'src/components'),
       },
     }),
     commonjs(),

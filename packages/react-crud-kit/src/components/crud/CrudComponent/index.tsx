@@ -12,11 +12,12 @@ import {
   Space,
   Col,
 } from "antd";
-import UploadPicture from "../../upload/UploadPicture";
-import UploadFileList from "../../upload/UploadFileList";
-import DatePicker from "../../form/ADatePicker";
+import UploadPicture from "@/components/upload/UploadPicture";
+import UploadFileList from "@/components/upload/UploadFileList";
+import DatePicker from "@/components/form/ADatePicker";
 import type { ColumnsType } from "antd/es/table";
-import type { ICrudProps, FieldSchema, CrudExposeMethods } from "../../../types";
+import type { ICrudProps, FieldSchema, CrudExposeMethods } from "@/types";
+import { ModelStatus } from "@/const";
 
 const CrudComponent = forwardRef<CrudExposeMethods, ICrudProps>(
   (
@@ -38,6 +39,8 @@ const CrudComponent = forwardRef<CrudExposeMethods, ICrudProps>(
     const [modalOpen, setModalOpen] = useState(false);
     const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
     const [editingRecord, setEditingRecord] = useState<any | null>(null);
+    const [modelStatus, setModelStatus] = useState(ModelStatus.VIEW);
+
     const handleSubmit = async () => {
       const values = await form.validateFields();
       try {
@@ -57,22 +60,19 @@ const CrudComponent = forwardRef<CrudExposeMethods, ICrudProps>(
       }
     };
 
-    const handleDelete = async (record: any) => {
-      await onDelete([record[primaryKey]]);
-    };
-    const editRecord = (record: any) => {
-      console.log("record", record);
-      setEditingRecord(record);
-      form.setFieldsValue(record);
-      setModalOpen(true);
-    };
-
     const renderFormField = (field: FieldSchema, forSearch = false) => {
       const baseProps = forSearch ? field.search : field.form;
       const commonProps = {
         ...field.props,
+        disabled: modelStatus === ModelStatus.VIEW,
         placeholder: baseProps?.placeholder || `请输入${field.label}`,
       };
+      //判断是否自定义
+      if (field.form?.render) {
+        console.log(field.form.render);
+        return field.form.render(commonProps);
+      }
+
       switch (field.type) {
         case "input":
           return <Input {...commonProps} />;
@@ -207,7 +207,7 @@ const CrudComponent = forwardRef<CrudExposeMethods, ICrudProps>(
                     {table.showEdit && (
                       <Button
                         type={table.editButtonType || "primary"}
-                        onClick={() => editRecord(record)}
+                        onClick={() => handleEdit(record)}
                       >
                         编辑
                       </Button>
@@ -241,6 +241,45 @@ const CrudComponent = forwardRef<CrudExposeMethods, ICrudProps>(
       });
 
     /**
+     * 处理表单那些内容需要展示
+     */
+    const showFormContent = () => {
+      const { columns } = option;
+      const currentColumns = columns.filter((f) => {
+        const {
+          addDisplay = true,
+          editDisplay = true,
+          viewDisplay = true,
+        } = f.form || {};
+        if (modelStatus == ModelStatus.ADD) {
+          return addDisplay;
+        } else if (modelStatus == ModelStatus.EDIT) {
+          return editDisplay;
+        } else if (modelStatus == ModelStatus.VIEW) {
+          return viewDisplay;
+        }
+      });
+
+      return (
+        <>
+          <Form layout="vertical" form={form}>
+            {currentColumns.map((field) => (
+              <Form.Item
+                key={field.name}
+                name={field.name}
+                label={field.label}
+                valuePropName={field.type === "switch" ? "checked" : "value"}
+                rules={field.form?.rules ?? []}
+              >
+                {renderFormField(field, false)}
+              </Form.Item>
+            ))}
+          </Form>
+        </>
+      );
+    };
+
+    /**
      * 处理搜索，调用父组件传递的方法，把内容传递出去
      */
     const handleSearch = async () => {
@@ -258,6 +297,31 @@ const CrudComponent = forwardRef<CrudExposeMethods, ICrudProps>(
       onChange: onSelectChange,
     };
 
+    const handleEdit = (record: any) => {
+      setModelStatus(ModelStatus.EDIT);
+      setEditingRecord(record);
+      form.setFieldsValue(record);
+      setModalOpen(true);
+    };
+
+    const handleAdd = () => {
+      setModelStatus(ModelStatus.ADD);
+      form.resetFields();
+      setEditingRecord(null);
+      setModalOpen(true);
+    };
+
+    const handleView = (record: any) => {
+      setModelStatus(ModelStatus.VIEW);
+      setEditingRecord(record);
+      form.setFieldsValue(record);
+      setModalOpen(true);
+    };
+
+    const handleDelete = async (record: any) => {
+      await onDelete([record[primaryKey]]);
+    };
+
     /**
      * 暴露方法
      */
@@ -265,15 +329,15 @@ const CrudComponent = forwardRef<CrudExposeMethods, ICrudProps>(
     useImperativeHandle(ref, () => ({
       //新增
       openCreateModal: () => {
-        form.resetFields();
-        setEditingRecord(null);
-        setModalOpen(true);
+        handleAdd();
       },
       //编辑
       openEditModal: (record) => {
-        setEditingRecord(record);
-        form.setFieldsValue(record);
-        setModalOpen(true);
+        handleEdit(record);
+      },
+      // 查看
+      openViewModal: (record) => {
+        handleView(record);
       },
       //设置默认搜索
       setDefaultSearch: (data: any) => {
@@ -332,7 +396,7 @@ const CrudComponent = forwardRef<CrudExposeMethods, ICrudProps>(
           {option.showAddButton && (
             <Button
               type="primary"
-              onClick={() => setModalOpen(true)}
+              onClick={handleAdd}
               style={{ marginBottom: 16 }}
             >
               {option?.addButtonText || "新增"}
@@ -384,25 +448,7 @@ const CrudComponent = forwardRef<CrudExposeMethods, ICrudProps>(
           }}
           onOk={handleSubmit}
         >
-          <Form layout="vertical" form={form}>
-            {option?.columns
-              .filter((f) => f.form?.show)
-              .map((field) => (
-                <Form.Item
-                  key={field.name}
-                  name={field.name}
-                  label={field.label}
-                  valuePropName={field.type === "switch" ? "checked" : "value"}
-                  rules={
-                    field.form?.required
-                      ? [{ required: true, message: `请输入${field.label}` }]
-                      : []
-                  }
-                >
-                  {renderFormField(field)}
-                </Form.Item>
-              ))}
-          </Form>
+          {showFormContent()}
         </Modal>
       </div>
     );

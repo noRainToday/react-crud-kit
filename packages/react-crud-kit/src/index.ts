@@ -31,7 +31,6 @@ export type {
 } from "./types";
 
 // 常量导出
-export { DataTypeEnum } from "./types";
 
 // 工具函数导出
 export * from "./utils";

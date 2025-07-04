@@ -1,5 +1,5 @@
-import type { DatePickerProps } from 'antd/lib';
-import type { Dayjs } from 'dayjs';
+import type { DatePickerProps } from "antd/lib";
+import type { Dayjs } from "dayjs";
 
 /**
  * 表单字段类型
@@ -18,18 +18,12 @@ export type FormFieldType =
  */
 export type DataType = "string" | "number" | "boolean" | "array" | "object";
 
-export const DataTypeEnum = {
-  String: "string",
-  Number: "number",
-  Array: "array",
-  Object: "object",
-  Boolean: "boolean",
-} as const;
 
 /**
  * 自定义日期选择器属性
  */
-export interface ADatePickerProps extends Omit<DatePickerProps, "value" | "onChange"> {
+export interface ADatePickerProps
+  extends Omit<DatePickerProps, "value" | "onChange"> {
   value?: string;
   valueFormat?: string;
   onChange?: (val?: string) => void;
@@ -52,4 +46,13 @@ export interface SearchFieldConfig {
   show?: boolean;
   placeholder?: string;
   span?: number;
+}
+
+/**
+ * 内容校验
+ */
+export interface IRuleItem {
+  required?: boolean;
+  message?: string;
+  trigger?: "blur" | "change";
 }
