@@ -116,12 +116,12 @@ const TestCrud: React.FC = () => {
           action: "/api/blade-resource/oss/endpoint/put-file-attach",
         },
         form: {
-          rules: [
-            {
-              required: true,
-              message: "请上传活动海报图片",
-            },
-          ],
+          // rules: [
+          //   {
+          //     required: true,
+          //     message: "请上传活动海报图片",
+          //   },
+          // ],
         },
         table: {
           render: (text: string) => {
@@ -155,12 +155,12 @@ const TestCrud: React.FC = () => {
           action: "/api/blade-resource/oss/endpoint/put-file-attach",
         },
         form: {
-          rules: [
-            {
-              required: true,
-              message: "请上传活动文件",
-            },
-          ],
+          // rules: [
+          //   {
+          //     required: true,
+          //     message: "请上传活动文件",
+          //   },
+          // ],
         },
         table: {
           show: false,
@@ -290,17 +290,17 @@ const TestCrud: React.FC = () => {
   const addUser = (data: any) => {
     console.log("添加用户", data);
     //构造上传信息
-    const info = {
-      ...data,
-      fileList: data.fileList.map((item: any) => {
-        return {
-          name: item.name,
-          url: item.url,
-        };
-      }),
-      pic: data.pic[0].url,
-    };
-    addActive(info).then((res) => {
+    // const info = {
+    //   ...data,
+    //   fileList: data.fileList.map((item: any) => {
+    //     return {
+    //       name: item.name,
+    //       url: item.url,
+    //     };
+    //   }),
+    //   pic: data.pic[0].url,
+    // };
+    addActive(data).then((res) => {
       if (res.code === 200) {
         fetchActiveList();
       }
