@@ -1,6 +1,6 @@
 import type { DataType } from "./form";
 import type { IFileUpload } from "./upload";
-import type { IRuleItem } from "./form";
+import type { IRuleItem, ITreeProps } from "./form";
 
 // 表单字段类型
 export type FieldType =
@@ -13,7 +13,12 @@ export type FieldType =
   | "custom"
   | "uploadPicture"
   | "uploadFile"
-  | "rate";
+  | "treeSelect"
+  | "rate"
+  | "inputNumber"
+  | "slider"
+  | "timePicker"
+  | "colorPicker";
 
 //表格多选/单选
 export type CheckOrRadioType = "checkbox" | "radio";
@@ -39,11 +44,11 @@ export interface ICrudOption {
   showBatchDeleteButton?: boolean;
   batchDeleteButtonText?: string;
 
-  searchButtonText?:string;
-  showSearchButton?:boolean;
+  searchButtonText?: string;
+  showSearchButton?: boolean;
 
-  resetButtonText?:string;
-  showResetButton?:boolean;
+  resetButtonText?: string;
+  showResetButton?: boolean;
 
   selection?: boolean;
   checkOrRadio?: CheckOrRadioType;

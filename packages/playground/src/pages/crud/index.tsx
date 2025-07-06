@@ -46,7 +46,17 @@ const TestCrud: React.FC = () => {
       {
         label: "评分",
         name: "score",
-        type: "rate",
+        type: "checkbox",
+        options: [
+          {
+            label: "xx",
+            value: 1,
+          },
+          {
+            label: "222",
+            value: 2,
+          },
+        ],
         width: 120,
         form: {
           rules: [
@@ -57,7 +67,65 @@ const TestCrud: React.FC = () => {
           ],
         },
         table: { show: true },
-        search: { show: false },
+        search: { show: true },
+      },
+      {
+        label: "树形组件",
+        name: "treeId",
+        type: "treeSelect",
+        width: 120,
+        props: {
+          treeData: [
+            {
+              title: "Node1",
+              value: "0-0",
+              key: "0-0",
+              children: [
+                {
+                  title: "Child Node1",
+                  value: "0-0-0",
+                  key: "0-0-0",
+                },
+              ],
+            },
+            {
+              title: "Node2",
+              value: "0-1",
+              key: "0-1",
+              children: [
+                {
+                  title: "Child Node3",
+                  value: "0-1-0",
+                  key: "0-1-0",
+                },
+                {
+                  title: "Child Node4",
+                  value: "0-1-1",
+                  key: "0-1-1",
+                },
+                {
+                  title: "Child Node5",
+                  value: "0-1-2",
+                  key: "0-1-2",
+                },
+              ],
+            },
+          ],
+          treeCheckable: true,
+          placeholder: "请选择树形内容",
+          allowClear: true,
+          maxCount: 1,
+        },
+        form: {
+          rules: [
+            {
+              required: true,
+              message: "请输入竞赛标题",
+            },
+          ],
+        },
+        table: { show: true },
+        search: { show: true },
       },
       {
         label: "开始时间",

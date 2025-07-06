@@ -39,4 +39,5 @@ export interface ActiveDetail {
   status: number;
   title: string;
   score: number;
+  treeId:string;
 }

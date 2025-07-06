@@ -11,6 +11,11 @@ import {
   Checkbox,
   Space,
   Rate,
+  TreeSelect,
+  ColorPicker,
+  InputNumber,
+  Slider,
+  TimePicker,
   Col,
 } from "antd";
 import UploadPicture from "@/components/upload/UploadPicture";
@@ -108,6 +113,21 @@ const CrudComponent = forwardRef<CrudExposeMethods, ICrudProps>(
           return <Switch {...field.props} />;
         case "datePicker": {
           return <DatePicker {...commonProps} />;
+        }
+        case "treeSelect": {
+          return <TreeSelect {...commonProps} />;
+        }
+        case "colorPicker": {
+          return <ColorPicker {...commonProps} />;
+        }
+        case "inputNumber": {
+          return <InputNumber {...commonProps} />;
+        }
+        case "slider": {
+          return <Slider {...commonProps} />;
+        }
+        case "timePicker": {
+          return <TimePicker {...commonProps} />;
         }
         case "uploadPicture": {
           const {
@@ -248,7 +268,7 @@ const CrudComponent = forwardRef<CrudExposeMethods, ICrudProps>(
       const columns: ColumnsType<any> = option.columns
         ?.filter(({ table }) => table?.show)
         .map((s) => {
-          const { name, label, type, options, dataType,width, table = {} } = s;
+          const { name, label, type, options, dataType, width, table = {} } = s;
 
           const commonProps = {
             title: label,
@@ -295,7 +315,7 @@ const CrudComponent = forwardRef<CrudExposeMethods, ICrudProps>(
             default:
               return {
                 ...commonProps,
-                render:(value: any) => value,
+                render: (value: any) => value,
               };
           }
         });

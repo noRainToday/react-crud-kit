@@ -56,3 +56,16 @@ export interface IRuleItem {
   message?: string;
   trigger?: "blur" | "change";
 }
+
+
+/**
+ * 树组件
+ */
+export interface ITreeProps {
+  treeData?: any[];
+  value?: string[];
+  onChange?: (newValue: string[]) => void;
+  treeCheckable?: boolean;
+  placeholder?: string;
+  showParent?: boolean;
+}
