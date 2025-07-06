@@ -10,6 +10,7 @@ import {
   Radio,
   Checkbox,
   Space,
+  Rate,
   Col,
 } from "antd";
 import UploadPicture from "@/components/upload/UploadPicture";
@@ -79,6 +80,8 @@ const CrudComponent = forwardRef<CrudExposeMethods, ICrudProps>(
       switch (field.type) {
         case "input":
           return <Input {...commonProps} />;
+        case "rate":
+          return <Rate {...commonProps} />;
         case "select":
           return (
             <Select {...commonProps}>
@@ -245,12 +248,13 @@ const CrudComponent = forwardRef<CrudExposeMethods, ICrudProps>(
       const columns: ColumnsType<any> = option.columns
         ?.filter(({ table }) => table?.show)
         .map((s) => {
-          const { name, label, type, options, dataType, table = {} } = s;
+          const { name, label, type, options, dataType,width, table = {} } = s;
 
           const commonProps = {
             title: label,
             key: name,
             dataIndex: name,
+            width,
           };
 
           switch (true) {
@@ -268,6 +272,12 @@ const CrudComponent = forwardRef<CrudExposeMethods, ICrudProps>(
                 ),
               };
 
+            // case type === "rate":
+            //   return {
+            //     ...commonProps,
+            //     render: (value: any) => <Rate allowHalf disabled defaultValue={value}></Rate>,
+            //   };
+
             case type === "switch":
               return {
                 ...commonProps,
@@ -283,7 +293,10 @@ const CrudComponent = forwardRef<CrudExposeMethods, ICrudProps>(
               };
 
             default:
-              return commonProps;
+              return {
+                ...commonProps,
+                render:(value: any) => value,
+              };
           }
         });
 
@@ -393,7 +406,6 @@ const CrudComponent = forwardRef<CrudExposeMethods, ICrudProps>(
           </Form.Item>
         </Col>
       );
-      
 
       return (
         <Form

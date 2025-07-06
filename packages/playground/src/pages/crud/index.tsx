@@ -23,11 +23,15 @@ const TestCrud: React.FC = () => {
     selection: true,
     checkOrRadio: "checkbox",
     searchButtonText: "全部搜索",
+    showViewButton: false,
+    showEditButton: false,
+    showDeleteButton: false,
     columns: [
       {
         label: "竞赛标题",
         name: "title",
         type: "input",
+        width: 120,
         form: {
           rules: [
             {
@@ -38,6 +42,22 @@ const TestCrud: React.FC = () => {
         },
         table: { show: true },
         search: { show: true },
+      },
+      {
+        label: "评分",
+        name: "score",
+        type: "rate",
+        width: 120,
+        form: {
+          rules: [
+            {
+              required: true,
+              message: "请输入竞赛标题",
+            },
+          ],
+        },
+        table: { show: true },
+        search: { show: false },
       },
       {
         label: "开始时间",

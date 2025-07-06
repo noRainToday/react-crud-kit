@@ -12,6 +12,7 @@ export const testDataList: ActiveDetail[] = [
     flag: 0,
     status: 0,
     isDeleted: 0,
+    score: 2.5,
     fileList: [
       {
         url: "https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/10",
@@ -39,6 +40,8 @@ export const testDataList: ActiveDetail[] = [
     number: 0,
     flag: 0,
     status: 0,
+    score: 4,
+
     isDeleted: 0,
     fileList: [
       {
@@ -59,6 +62,8 @@ export const testDataList: ActiveDetail[] = [
     flag: 0,
     status: 0,
     isDeleted: 0,
+    score: 3.5,
+
     fileList: [
       {
         url: "https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/10",
@@ -78,6 +83,7 @@ export const testDataList: ActiveDetail[] = [
     flag: 0,
     status: 0,
     isDeleted: 0,
+    score:5,
     fileList: [
       {
         url: "https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/10",

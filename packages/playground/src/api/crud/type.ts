@@ -38,4 +38,5 @@ export interface ActiveDetail {
   startTime: string;
   status: number;
   title: string;
+  score: number;
 }

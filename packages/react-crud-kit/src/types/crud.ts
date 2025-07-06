@@ -12,7 +12,8 @@ export type FieldType =
   | "switch"
   | "custom"
   | "uploadPicture"
-  | "uploadFile";
+  | "uploadFile"
+  | "rate";
 
 //表格多选/单选
 export type CheckOrRadioType = "checkbox" | "radio";
@@ -58,6 +59,7 @@ export interface FieldSchema {
   searchSpan?: number;
   fileUpload?: IFileUpload;
   props?: Record<string, any>; //需要传递到子组件的
+  width?: number | string;
   table?: ITable;
   form?: IForm;
   search?: ISearch;

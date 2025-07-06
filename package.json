@@ -4,16 +4,22 @@
   "description": "A React CRUD library with playground for testing",
   "private": true,
   "scripts": {
-    "dev": "pnpm --filter playground dev",
     "build": "pnpm --filter react-crud-kit build",
+    "dev:playground": "pnpm --filter playground dev",
     "dev:kit": "pnpm --filter react-crud-kit dev",
+    "dev:all": "concurrently \"pnpm --filter playground dev\" \"pnpm --filter react-crud-kit dev\"",
     "build:all": "pnpm -r build",
     "lint": "pnpm -r lint",
     "test": "pnpm -r test",
     "clean": "pnpm -r clean",
     "install:all": "pnpm install"
   },
-  "keywords": ["react", "crud", "library", "monorepo"],
+  "keywords": [
+    "react",
+    "crud",
+    "library",
+    "monorepo"
+  ],
   "author": "",
   "license": "ISC",
   "packageManager": "pnpm@10.11.0",
