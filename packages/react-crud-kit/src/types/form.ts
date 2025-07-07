@@ -5,9 +5,17 @@ import type { FormProps } from "antd";
 //crud 操作配置
 export interface IFormOption {
   formProps?: FormProps;
+  menuConfig?: IMenuBtn;
   columns: FormFieldSchema[];
 }
 
+export interface IMenuBtn {
+  menuBtn?: boolean;
+  submitBtn?: boolean;
+  submitText?: string;
+  resetBtn?: boolean;
+  resetText?: string;
+}
 //字段配置
 export interface FormFieldSchema {
   type: FieldType;

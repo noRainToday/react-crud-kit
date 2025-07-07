@@ -24,7 +24,7 @@ import type {
 } from "@/types/form";
 
 const AFrom = forwardRef<FormExposeMethods, IFormOption>(
-  ({ formProps, columns }, ref) => {
+  ({ formProps, menuConfig, columns }, ref) => {
     const [form] = Form.useForm();
 
     const renderFormField = (field: FormFieldSchema) => {
@@ -143,6 +143,34 @@ const AFrom = forwardRef<FormExposeMethods, IFormOption>(
     };
 
     /**
+     * 处理按钮
+     */
+    const generateMenuBtn = () => {
+      const {
+        menuBtn = true,
+        submitBtn = true,
+        submitText = "提交",
+        resetBtn = true,
+        resetText = "重置",
+      } = menuConfig ?? {};
+
+      if (menuBtn) {
+        return (
+          <Form.Item >
+            {submitBtn && (
+              <Button type="primary" htmlType="submit">
+                {submitText}
+              </Button>
+            )}
+            {resetBtn && (
+              <Button onClick={() => form.resetFields()} >{resetText}</Button>
+            )}
+          </Form.Item>
+        );
+      }
+    };
+
+    /**
      * 处理表单那些内容需要展示
      */
     const showFormContent = () => {
@@ -161,12 +189,7 @@ const AFrom = forwardRef<FormExposeMethods, IFormOption>(
               </Form.Item>
             ))}
 
-            <Form.Item >
-              <Button type="primary" htmlType="submit">
-                Submit
-              </Button>
-              <Button onClick={() => form.resetFields()}>reset</Button>
-            </Form.Item>
+            {generateMenuBtn()}
           </Form>
         </>
       );

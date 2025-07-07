@@ -210,6 +210,11 @@ const Upload: React.FC = () => {
         name: "rate",
         type: "rate",
       },
+       {
+        label: "slider",
+        name: "slider",
+        type: "slider",
+      },
       {
         label: "timePicker",
         name: "timePicker",
