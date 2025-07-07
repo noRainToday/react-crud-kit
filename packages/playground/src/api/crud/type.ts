@@ -38,7 +38,7 @@ export interface ActiveDetail {
   status: number;
   title: string;
   score: number;
-  treeId: string;
+  treeId: string[];
   sex: number;
   hobby: number[];
   isSwitch: boolean;

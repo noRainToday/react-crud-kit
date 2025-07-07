@@ -289,6 +289,32 @@ const CrudComponent = forwardRef<CrudExposeMethods, ICrudProps>(
       const option = options.find((opt) => opt.value === value);
       return option?.label;
     };
+
+    interface ITreeSelectOption {
+      key: string;
+      title: string;
+      children?: ITreeSelectOption[];
+    }
+    const generateTreeSelectText = (
+      values: string[],
+      treeData: ITreeSelectOption[]
+    ): string[] => {
+      const result: string[] = [];
+
+      const findTitles = (nodes: ITreeSelectOption[]) => {
+        for (const node of nodes) {
+          if (values.includes(node.key)) {
+            result.push(node.title);
+          }
+          if (node.children) {
+            findTitles(node.children);
+          }
+        }
+      };
+
+      findTitles(treeData);
+      return result;
+    };
     /**
      * 生成table需要的columns
      */
@@ -297,7 +323,16 @@ const CrudComponent = forwardRef<CrudExposeMethods, ICrudProps>(
       const columns: ColumnsType<any> = option.columns
         ?.filter(({ table }) => table?.show)
         .map((s) => {
-          const { name, label, type, options, dataType, width, table = {} } = s;
+          const {
+            name,
+            label,
+            type,
+            options,
+            dataType,
+            width,
+            table = {},
+            props,
+          } = s;
 
           const commonProps = {
             title: label,
@@ -349,6 +384,13 @@ const CrudComponent = forwardRef<CrudExposeMethods, ICrudProps>(
                 ...commonProps,
                 render: (value: any) => {
                   return generateRadioText(value, options!);
+                },
+              };
+            case type === "treeSelect":
+              return {
+                ...commonProps,
+                render: (value: any) => {
+                  return generateTreeSelectText(value, props?.treeData).join(" | ");
                 },
               };
 
@@ -574,7 +616,7 @@ const CrudComponent = forwardRef<CrudExposeMethods, ICrudProps>(
           dataSource={listData}
           rowKey={primaryKey}
           loading={loading}
-          style={{height:option.tableHeight ?? 'auto'}}
+          style={{ height: option.tableHeight ?? "auto" }}
           pagination={{
             current: pagination.current,
             pageSize: pagination.pageSize,
