@@ -1,24 +1,8 @@
-import type { DataType } from "./form";
 import type { IFileUpload } from "./upload";
-import type { IRuleItem, IOption } from "./form";
+import type { IRuleItem, IOption,FieldType,DataType } from "./base";
+import type { FormProps } from "antd";
 
-// 表单字段类型
-export type FieldType =
-  | "input"
-  | "select"
-  | "radio"
-  | "datePicker"
-  | "checkbox"
-  | "switch"
-  | "custom"
-  | "uploadPicture"
-  | "uploadFile"
-  | "treeSelect"
-  | "rate"
-  | "inputNumber"
-  | "slider"
-  | "timePicker"
-  | "colorPicker";
+
 
 //表格多选/单选
 export type CheckOrRadioType = "checkbox" | "radio";
@@ -52,6 +36,8 @@ export interface ICrudOption {
 
   selection?: boolean;
   checkOrRadio?: CheckOrRadioType;
+
+  formProps?: FormProps;
   columns: FieldSchema[];
 }
 

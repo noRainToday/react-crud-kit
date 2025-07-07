@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { DatePicker } from "antd";
 import type { Dayjs } from "dayjs";
 import dayjs from "dayjs";
-import type { ADatePickerProps } from "@/types/form";
+import type { ADatePickerProps } from "@/types/base";
 
 const ADatePicker: React.FC<ADatePickerProps> = ({
   value,

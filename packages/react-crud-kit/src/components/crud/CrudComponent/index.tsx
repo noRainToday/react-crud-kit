@@ -383,7 +383,7 @@ const CrudComponent = forwardRef<CrudExposeMethods, ICrudProps>(
      * 处理表单那些内容需要展示
      */
     const showFormContent = () => {
-      const { columns } = option;
+      const { columns, formProps } = option;
       const currentColumns = columns.filter((f) => {
         const {
           addDisplay = true,
@@ -401,7 +401,7 @@ const CrudComponent = forwardRef<CrudExposeMethods, ICrudProps>(
 
       return (
         <>
-          <Form layout="vertical" form={form}>
+          <Form {...formProps} form={form}>
             {currentColumns.map((field) => (
               <Form.Item
                 key={field.name}

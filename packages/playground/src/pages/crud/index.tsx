@@ -26,6 +26,12 @@ const TestCrud: React.FC = () => {
     showViewButton: false,
     showEditButton: false,
     showDeleteButton: false,
+
+    formProps: {
+      labelCol: { span: 12 },
+      wrapperCol: { span: 12 },
+      layout: "vertical",
+    },
     columns: [
       {
         label: "input输入框",
