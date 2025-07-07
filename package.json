@@ -10,9 +10,10 @@
     "dev:all": "concurrently \"pnpm --filter playground dev\" \"pnpm --filter react-crud-kit dev\"",
     "build:all": "pnpm -r build",
     "lint": "pnpm -r lint",
-    "test": "pnpm -r test",
     "clean": "pnpm -r clean",
-    "install:all": "pnpm install"
+    "install:all": "pnpm install",
+    "test": "vitest",
+    "test:watch": "vitest"
   },
   "keywords": [
     "react",
@@ -20,11 +21,10 @@
     "library",
     "monorepo"
   ],
-  "author": "",
+  "author": "test",
   "license": "ISC",
   "packageManager": "pnpm@10.11.0",
   "devDependencies": {
-    "concurrently": "^9.2.0",
     "typescript": "~5.8.3"
   }
 }

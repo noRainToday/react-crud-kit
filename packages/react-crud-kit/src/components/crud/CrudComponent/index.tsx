@@ -30,7 +30,6 @@ import type {
   IOption,
 } from "@/types";
 import { ModelStatus } from "@/const";
-import styles from "./index.module.css";
 
 const CrudComponent = forwardRef<CrudExposeMethods, ICrudProps>(
   (
