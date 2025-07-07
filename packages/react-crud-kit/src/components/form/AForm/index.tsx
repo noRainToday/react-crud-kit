@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle } from "react";
+import { forwardRef, useImperativeHandle, useMemo } from "react";
 import {
   Form,
   Input,
@@ -13,6 +13,8 @@ import {
   Slider,
   TimePicker,
   Button,
+  Col,
+  Row,
 } from "antd";
 import UploadPicture from "@/components/upload/UploadPicture";
 import UploadFileList from "@/components/upload/UploadFileList";
@@ -83,60 +85,10 @@ const AFrom = forwardRef<FormExposeMethods, IFormOption>(
         case "timePicker": {
           return <TimePicker {...commonProps} />;
         }
-        case "uploadPicture": {
-          const {
-            action = "",
-            propsHttp = {
-              res: "data",
-              url: "url",
-              name: "name",
-            },
-            headers,
-            multiple = false,
-            maxCount = 2,
-          } = field.fileUpload!;
-          return (
-            <UploadPicture
-              action={action}
-              propsHttp={propsHttp}
-              headers={headers}
-              multiple={multiple}
-              maxCount={maxCount}
-              onUploadSuccess={(fileData) => {
-                form.setFieldsValue({
-                  [field.name]: fileData,
-                });
-              }}
-            />
-          );
-        }
-        case "uploadFile": {
-          const {
-            action = "",
-            propsHttp = {
-              res: "data",
-              url: "url",
-              name: "name",
-            },
-            headers,
-            multiple = false,
-            maxCount = 2,
-          } = field.fileUpload!;
-          return (
-            <UploadFileList
-              action={action}
-              propsHttp={propsHttp}
-              headers={headers}
-              multiple={multiple}
-              maxCount={maxCount}
-              onUploadSuccess={(fileData) => {
-                form.setFieldsValue({
-                  [field.name]: fileData,
-                });
-              }}
-            />
-          );
-        }
+        case "uploadPicture":
+          return renderUpload(field, "picture");
+        case "uploadFile":
+          return renderUpload(field, "file");
         default:
           return <Input {...commonProps} />;
       }
@@ -152,18 +104,23 @@ const AFrom = forwardRef<FormExposeMethods, IFormOption>(
         submitText = "提交",
         resetBtn = true,
         resetText = "重置",
+        position = "right",
       } = menuConfig ?? {};
 
       if (menuBtn) {
         return (
-          <Form.Item >
+          <Form.Item style={{ textAlign: position, marginBottom: 16 }}>
             {submitBtn && (
-              <Button type="primary" htmlType="submit">
+              <Button
+                type="primary"
+                htmlType="submit"
+                style={{ marginRight: 16 }}
+              >
                 {submitText}
               </Button>
             )}
             {resetBtn && (
-              <Button onClick={() => form.resetFields()} >{resetText}</Button>
+              <Button onClick={() => form.resetFields()}>{resetText}</Button>
             )}
           </Form.Item>
         );
@@ -171,15 +128,44 @@ const AFrom = forwardRef<FormExposeMethods, IFormOption>(
     };
 
     /**
+     * 文件上传
+     */
+
+    const renderUpload = (field: FormFieldSchema, type: "picture" | "file") => {
+      const {
+        action = "",
+        propsHttp = { res: "data", url: "url", name: "name" },
+        headers,
+        multiple = false,
+        maxCount = 2,
+      } = field.fileUpload!;
+
+      const UploadComponent =
+        type === "picture" ? UploadPicture : UploadFileList;
+
+      return (
+        <UploadComponent
+          action={action}
+          propsHttp={propsHttp}
+          headers={headers}
+          multiple={multiple}
+          maxCount={maxCount}
+          onUploadSuccess={(fileData) => {
+            form.setFieldsValue({ [field.name]: fileData });
+          }}
+        />
+      );
+    };
+
+    /**
      * 处理表单那些内容需要展示
      */
-    const showFormContent = () => {
+    const formFields = useMemo(() => {
       return (
-        <>
-          <Form {...formProps} form={form}>
-            {columns.map((field) => (
+        <Row gutter={24}>
+          {columns.map((field) => (
+            <Col span={field.span ?? 12} key={field.name}>
               <Form.Item
-                key={field.name}
                 name={field.name}
                 label={field.label}
                 valuePropName={field.type === "switch" ? "checked" : "value"}
@@ -187,13 +173,11 @@ const AFrom = forwardRef<FormExposeMethods, IFormOption>(
               >
                 {renderFormField(field)}
               </Form.Item>
-            ))}
-
-            {generateMenuBtn()}
-          </Form>
-        </>
+            </Col>
+          ))}
+        </Row>
       );
-    };
+    }, [columns]);
 
     /**
      * 暴露方法
@@ -203,8 +187,25 @@ const AFrom = forwardRef<FormExposeMethods, IFormOption>(
       setDefaultValues: (data: any) => {
         form.setFieldsValue(data);
       },
+      getValues: () => form.getFieldsValue(),
+      validate: () => form.validateFields(),
+      resetFields: () => form.resetFields(),
     }));
-    return <div>{showFormContent()}</div>;
+    return (
+      <div>
+        <Form
+          {...formProps}
+          form={form}
+          onFinish={(values) => {
+            formProps?.onFinish?.(values); // 执行原有
+          }}
+        >
+          {formFields}
+
+          {generateMenuBtn()}
+        </Form>
+      </div>
+    );
   }
 );
 

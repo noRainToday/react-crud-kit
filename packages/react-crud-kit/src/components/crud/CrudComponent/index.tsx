@@ -17,6 +17,7 @@ import {
   Slider,
   TimePicker,
   Col,
+  Row,
 } from "antd";
 import UploadPicture from "@/components/upload/UploadPicture";
 import UploadFileList from "@/components/upload/UploadFileList";
@@ -205,7 +206,7 @@ const CrudComponent = forwardRef<CrudExposeMethods, ICrudProps>(
         batchDeleteButtonText = "批量删除",
       } = option;
       return (
-        <div className={styles.topAction}>
+        <div style={{ marginBottom: 16, display: "flex", gap: 16 }}>
           {showAddButton && (
             <Button type="primary" onClick={handleAdd}>
               {addButtonText}
@@ -402,17 +403,23 @@ const CrudComponent = forwardRef<CrudExposeMethods, ICrudProps>(
       return (
         <>
           <Form {...formProps} form={form}>
-            {currentColumns.map((field) => (
-              <Form.Item
-                key={field.name}
-                name={field.name}
-                label={field.label}
-                valuePropName={field.type === "switch" ? "checked" : "value"}
-                rules={field.form?.rules ?? []}
-              >
-                {renderFormField(field, false)}
-              </Form.Item>
-            ))}
+            <Row gutter={24}>
+              {currentColumns.map((field) => (
+                <Col span={field?.span ?? 12} key={field.name}>
+                  <Form.Item
+                    key={field.name}
+                    name={field.name}
+                    label={field.label}
+                    valuePropName={
+                      field.type === "switch" ? "checked" : "value"
+                    }
+                    rules={field.form?.rules ?? []}
+                  >
+                    {renderFormField(field, false)}
+                  </Form.Item>
+                </Col>
+              ))}
+            </Row>
           </Form>
         </>
       );
@@ -440,19 +447,8 @@ const CrudComponent = forwardRef<CrudExposeMethods, ICrudProps>(
       } = option;
       const columns = option.columns?.filter((f) => f.search?.show);
 
-      const colItem = columns.map((field) => (
-        <Col
-          span={field.search?.span ?? option.searchSpan ?? 4}
-          key={field.name}
-        >
-          <Form.Item name={field.name} label={field.label}>
-            {renderFormField(field, true)}
-          </Form.Item>
-        </Col>
-      ));
-
       let operate = (
-        <Col span={option?.searchSpan ?? 4}>
+        <Col span={option?.searchSpan ?? 6}>
           <Form.Item>
             {showSearchButton && (
               <Button type="primary" htmlType="submit" style={{ marginTop: 4 }}>
@@ -475,6 +471,24 @@ const CrudComponent = forwardRef<CrudExposeMethods, ICrudProps>(
         </Col>
       );
 
+      const colItem = (
+        <Row gutter={24}>
+          {columns.map((field) => (
+            <Col
+              span={field.search?.span ?? option.searchSpan ?? 6}
+              key={field.name}
+              style={{ marginBottom: 16 }}
+            >
+              <Form.Item name={field.name} label={field.label}>
+                {renderFormField(field, true)}
+              </Form.Item>
+            </Col>
+          ))}
+
+          {operate}
+        </Row>
+      );
+
       return (
         <Form
           layout="inline"
@@ -483,7 +497,6 @@ const CrudComponent = forwardRef<CrudExposeMethods, ICrudProps>(
           style={{ marginBottom: 16, width: "100%" }}
         >
           {colItem}
-          {operate}
         </Form>
       );
     };
@@ -561,6 +574,7 @@ const CrudComponent = forwardRef<CrudExposeMethods, ICrudProps>(
           dataSource={listData}
           rowKey={primaryKey}
           loading={loading}
+          style={{height:option.tableHeight ?? 'auto'}}
           pagination={{
             current: pagination.current,
             pageSize: pagination.pageSize,

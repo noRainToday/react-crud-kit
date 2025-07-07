@@ -15,6 +15,7 @@ export interface IMenuBtn {
   submitText?: string;
   resetBtn?: boolean;
   resetText?: string;
+  position?: ButtonPosition; // 添加位置字段
 }
 //字段配置
 export interface FormFieldSchema {
@@ -24,6 +25,7 @@ export interface FormFieldSchema {
   dataType?: DataType;
   options?: IOption[];
   searchSpan?: number;
+  span?: number;
   fileUpload?: IFileUpload;
   props?: Record<string, any>; //需要传递到子组件的
   width?: number | string;
@@ -33,4 +35,8 @@ export interface FormFieldSchema {
 
 export interface FormExposeMethods {
   setDefaultValues: (values: Record<string, any>) => void;
+  getValues: () => Record<string, any>;
+  validate: () => Promise<any>;
+  resetFields: () => void;
 }
+export type ButtonPosition = 'left' | 'center' | 'right';

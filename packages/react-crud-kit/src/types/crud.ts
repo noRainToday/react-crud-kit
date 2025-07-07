@@ -1,5 +1,5 @@
 import type { IFileUpload } from "./upload";
-import type { IRuleItem, IOption,FieldType,DataType } from "./base";
+import type { IRuleItem, IOption, FieldType, DataType } from "./base";
 import type { FormProps } from "antd";
 
 
@@ -12,6 +12,7 @@ export interface ICrudOption {
   bordered?: boolean;
   showSearch?: boolean;
   searchSpan?: number;
+  tableHeight?: number,
 
   showAddButton?: boolean;
   addButtonText?: string;
@@ -49,6 +50,7 @@ export interface FieldSchema {
   dataType?: DataType;
   options?: IOption[];
   searchSpan?: number;
+  span?: number;
   fileUpload?: IFileUpload;
   props?: Record<string, any>; //需要传递到子组件的
   width?: number | string;

@@ -1,8 +1,12 @@
 import React from "react";
 import { AForm } from "react-crud-kit";
+import { positionEnum } from "react-crud-kit";
 import type { IFormOption } from "react-crud-kit";
 const Upload: React.FC = () => {
   const baseConfig: IFormOption = {
+    menuConfig: {
+      position: positionEnum.center,
+    },
     formProps: {
       layout: "vertical",
       initialValues: {
@@ -18,6 +22,7 @@ const Upload: React.FC = () => {
         name: "title",
         type: "input",
         width: 120,
+        span: 24,
       },
       {
         label: "树形组件",
@@ -210,7 +215,7 @@ const Upload: React.FC = () => {
         name: "rate",
         type: "rate",
       },
-       {
+      {
         label: "slider",
         name: "slider",
         type: "slider",

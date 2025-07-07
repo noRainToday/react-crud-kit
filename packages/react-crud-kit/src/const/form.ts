@@ -5,3 +5,11 @@ export const DataTypeEnum = {
   Object: "object",
   Boolean: "boolean",
 } as const;
+
+
+export const positionEnum = {
+  left: 'left',
+  center: 'center',
+  right: 'right',
+} as const;
+

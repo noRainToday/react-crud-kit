@@ -26,10 +26,10 @@ const TestCrud: React.FC = () => {
     showViewButton: false,
     showEditButton: false,
     showDeleteButton: false,
-
+    tableHeight:800,
     formProps: {
-      labelCol: { span: 12 },
-      wrapperCol: { span: 12 },
+      labelCol: { span: 24 },
+      wrapperCol: { span: 24 },
       layout: "vertical",
     },
     columns: [
@@ -38,6 +38,7 @@ const TestCrud: React.FC = () => {
         name: "title",
         type: "input",
         width: 120,
+        span:24,
         form: {
           rules: [
             {
@@ -54,6 +55,8 @@ const TestCrud: React.FC = () => {
         name: "treeId",
         type: "treeSelect",
         width: 120,
+        span:24,
+
         props: {
           treeData: [
             {
@@ -154,6 +157,7 @@ const TestCrud: React.FC = () => {
         label: "详情",
         name: "content",
         type: "input",
+        width:300,
         form: {
           rules: [
             {
