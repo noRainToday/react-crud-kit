@@ -24,10 +24,10 @@ pnpm install
 
 ### 开发模式
 
-启动 playground 开发服务器：
+启动 playground 与 react-crud-kit 开发服务器：
 
 ```bash
-pnpm dev
+pnpm dev:all
 ```
 
 ### 构建
