@@ -1,6 +1,6 @@
 import type { DataType } from "./form";
 import type { IFileUpload } from "./upload";
-import type { IRuleItem, ITreeProps } from "./form";
+import type { IRuleItem, IOption } from "./form";
 
 // 表单字段类型
 export type FieldType =
@@ -54,13 +54,14 @@ export interface ICrudOption {
   checkOrRadio?: CheckOrRadioType;
   columns: FieldSchema[];
 }
+
 //字段配置
 export interface FieldSchema {
   type: FieldType;
   name: string;
   label: string;
   dataType?: DataType;
-  options?: { label: string; value: any }[];
+  options?: IOption[];
   searchSpan?: number;
   fileUpload?: IFileUpload;
   props?: Record<string, any>; //需要传递到子组件的

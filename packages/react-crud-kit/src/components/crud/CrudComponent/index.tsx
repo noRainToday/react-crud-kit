@@ -22,7 +22,12 @@ import UploadPicture from "@/components/upload/UploadPicture";
 import UploadFileList from "@/components/upload/UploadFileList";
 import DatePicker from "@/components/form/ADatePicker";
 import type { ColumnsType } from "antd/es/table";
-import type { ICrudProps, FieldSchema, CrudExposeMethods } from "@/types";
+import type {
+  ICrudProps,
+  FieldSchema,
+  CrudExposeMethods,
+  IOption,
+} from "@/types";
 import { ModelStatus } from "@/const";
 import styles from "./index.module.css";
 
@@ -260,6 +265,29 @@ const CrudComponent = forwardRef<CrudExposeMethods, ICrudProps>(
         </Space>
       );
     };
+
+    /**
+     * 转换radio select checkbox 文字内容
+     */
+
+    const generateCheckboxText = (
+      value: string[] | number[],
+      options: IOption[]
+    ) => {
+      if (Array.isArray(value)) {
+        return value.map((v) => {
+          const option = options.find((opt) => opt.value === v);
+          return option?.label;
+        });
+      } else {
+        return value;
+      }
+    };
+
+    const generateRadioText = (value: string, options: IOption[]) => {
+      const option = options.find((opt) => opt.value === value);
+      return option?.label;
+    };
     /**
      * 生成table需要的columns
      */
@@ -303,6 +331,26 @@ const CrudComponent = forwardRef<CrudExposeMethods, ICrudProps>(
                 ...commonProps,
                 render: (value: any) => <Switch checked={value} disabled />,
               };
+
+            case type === "checkbox":
+              return {
+                ...commonProps,
+                render: (value: any) => {
+                  let arr = generateCheckboxText(value, options!);
+                  if (Array.isArray(arr)) {
+                    return arr?.join(" | ");
+                  }
+                  return arr;
+                },
+              };
+            case type === "radio":
+              return {
+                ...commonProps,
+                render: (value: any) => {
+                  return generateRadioText(value, options!);
+                },
+              };
+
             case dataType === "array" || dataType === "object":
               console.warn(
                 `${label} 返回对象类型数据,如果需要正确展示请自行编写render函数`
@@ -464,8 +512,9 @@ const CrudComponent = forwardRef<CrudExposeMethods, ICrudProps>(
     };
 
     const handleView = (record: any) => {
+      console.log("record", record);
       setModelStatus(ModelStatus.VIEW);
-      setEditingRecord(record);
+      // setEditingRecord(record);
       form.setFieldsValue(record);
       setModalOpen(true);
     };

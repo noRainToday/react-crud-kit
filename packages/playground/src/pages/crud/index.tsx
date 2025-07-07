@@ -6,7 +6,7 @@ import type {
   IBasePagination,
   ICrudOption,
 } from "react-crud-kit";
-import { Button, Space, Modal, Input } from "antd";
+import { Button, Space, Modal } from "antd";
 import {
   getActiveList,
   editActive,
@@ -28,35 +28,9 @@ const TestCrud: React.FC = () => {
     showDeleteButton: false,
     columns: [
       {
-        label: "竞赛标题",
+        label: "input输入框",
         name: "title",
         type: "input",
-        width: 120,
-        form: {
-          rules: [
-            {
-              required: true,
-              message: "请输入竞赛标题",
-            },
-          ],
-        },
-        table: { show: true },
-        search: { show: true },
-      },
-      {
-        label: "评分",
-        name: "score",
-        type: "checkbox",
-        options: [
-          {
-            label: "xx",
-            value: 1,
-          },
-          {
-            label: "222",
-            value: 2,
-          },
-        ],
         width: 120,
         form: {
           rules: [
@@ -171,7 +145,7 @@ const TestCrud: React.FC = () => {
         search: { show: true },
       },
       {
-        label: "活动详情",
+        label: "详情",
         name: "content",
         type: "input",
         form: {
@@ -271,7 +245,7 @@ const TestCrud: React.FC = () => {
         },
       },
       {
-        label: "活动状态",
+        label: "select选择",
         name: "status",
         type: "select",
         options: [
@@ -300,22 +274,111 @@ const TestCrud: React.FC = () => {
         search: { show: true },
       },
       {
-        label: "参加人数",
+        label: "inputNumber数字框",
         name: "number",
-        type: "input",
+        type: "inputNumber",
+        props: {
+          style: { width: "100%" },
+        },
         form: {
-          addDisplay: false,
-          viewDisplay: false,
-          render: (props: any) => {
-            console.log("props", props);
-            return <Input {...props}></Input>;
-          },
+          // addDisplay: false,
+          // viewDisplay: false,
+          // render: (props: any) => {
+          //   console.log("props", props);
+          //   return <Input {...props } ></Input>;
+          // },
           rules: [
             {
               required: true,
               message: "请输入参加人数",
             },
           ],
+        },
+        table: { show: true },
+        search: { show: true },
+      },
+      {
+        label: "性别",
+        name: "sex",
+        type: "radio",
+        options: [
+          {
+            label: "男",
+            value: 1,
+          },
+          {
+            label: "女",
+            value: 2,
+          },
+        ],
+        form: {
+          rules: [
+            {
+              required: true,
+              message: "请选择性别",
+            },
+          ],
+        },
+        table: { show: true },
+        search: { show: false },
+      },
+      {
+        label: "爱好",
+        name: "hobby",
+        type: "checkbox",
+        width: 200,
+        options: [
+          {
+            label: "篮球",
+            value: 1,
+          },
+          {
+            label: "足球",
+            value: 2,
+          },
+          {
+            label: "乒乓球",
+            value: 3,
+          },
+        ],
+        form: {
+          rules: [
+            {
+              required: true,
+              message: "请选择性别",
+            },
+          ],
+        },
+        table: { show: true },
+        search: { show: false },
+      },
+      {
+        label: "switch开关",
+        name: "isSwitch",
+        type: "switch",
+        table: { show: true },
+        search: { show: false },
+      },
+      {
+        label: "colorPicker",
+        name: "colorPicker",
+        type: "colorPicker",
+        table: { show: true },
+        search: { show: false },
+      },
+      {
+        label: "rate",
+        name: "rate",
+        type: "rate",
+        table: { show: true },
+        search: { show: false },
+      },
+      {
+        label: "timePicker",
+        name: "timePicker",
+        type: "timePicker",
+        props: {
+          status: "error",
         },
         table: { show: true },
         search: { show: false },
@@ -469,7 +532,7 @@ const TestCrud: React.FC = () => {
             console.log("topAction");
           }}
         >
-          <Button color="primary">查看</Button>
+          <Button color="primary">查看 customTopAction </Button>
         </div>
       </Space>
     );

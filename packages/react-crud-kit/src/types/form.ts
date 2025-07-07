@@ -69,3 +69,9 @@ export interface ITreeProps {
   placeholder?: string;
   showParent?: boolean;
 }
+
+
+export interface IOption {
+  label: string;
+  value: any;
+}
