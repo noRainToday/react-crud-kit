@@ -1,5 +1,4 @@
 import { CrudComponent } from "react-crud-kit";
-
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import type {
   CrudExposeMethods,
@@ -27,6 +26,9 @@ const TestCrud: React.FC = () => {
     showEditButton: false,
     showDeleteButton: false,
     tableHeight:800,
+    addModelTitle:'测试新增',
+    editModelTitle:'测试编辑',
+    viewModelTitle:'测试查看',
     formProps: {
       labelCol: { span: 24 },
       wrapperCol: { span: 24 },
@@ -56,7 +58,6 @@ const TestCrud: React.FC = () => {
         type: "treeSelect",
         width: 120,
         span:24,
-
         props: {
           treeData: [
             {
@@ -399,7 +400,7 @@ const TestCrud: React.FC = () => {
   const crudRef = useRef<CrudExposeMethods>(null);
   const [pagination, setPagination] = useState<IBasePagination>({
     current: 1,
-    pageSize: 2,
+    pageSize: 10,
     total: 0,
     handlePageChange: (current: number, pageSize: number) => {
       setPagination({

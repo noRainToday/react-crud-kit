@@ -38,6 +38,10 @@ export interface ICrudOption {
   selection?: boolean;
   checkOrRadio?: CheckOrRadioType;
 
+  addModelTitle?: string;
+  editModelTitle?: string;
+  viewModelTitle?: string;
+
   formProps?: FormProps;
   columns: FieldSchema[];
 }
@@ -110,6 +114,7 @@ export interface IBasePagination {
   current: number;
   pageSize: number;
   total: number;
+  pageSizeOptions?: string[];
   handlePageChange: (current: number, pageSize: number) => void;
   handleSizeChange: (current: number, pageSize: number) => void;
 }

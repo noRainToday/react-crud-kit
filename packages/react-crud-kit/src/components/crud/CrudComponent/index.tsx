@@ -196,7 +196,7 @@ const CrudComponent = forwardRef<CrudExposeMethods, ICrudProps>(
     /**
      * 生成新增按钮 + 批量删除按钮
      */
-
+    
     const generateAddAndBatchDeleteButton = () => {
       const {
         showAddButton = true,
@@ -420,7 +420,18 @@ const CrudComponent = forwardRef<CrudExposeMethods, ICrudProps>(
       });
       return columns;
     };
-
+    /**
+     * 显示model的标题
+     */
+    const showModelTitle = ()=> {
+      if(modelStatus == ModelStatus.ADD) {
+        return option.addModelTitle ?? '新增'
+      } else if(modelStatus == ModelStatus.EDIT) {
+        return option.editModelTitle ?? '编辑'
+      } else if(modelStatus == ModelStatus.VIEW) {
+        return option.viewModelTitle ?? '查看'
+      }
+    }
     /**
      * 处理表单那些内容需要展示
      */
@@ -541,22 +552,33 @@ const CrudComponent = forwardRef<CrudExposeMethods, ICrudProps>(
         </Form>
       );
     };
+    /**
+     * 选择
+     */
     const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
       console.log("selectedRowKeys changed: ", newSelectedRowKeys);
       setSelectedRowKeys(newSelectedRowKeys);
     };
+    /**
+     * 选择
+     */
     const rowSelection = {
       type: option.checkOrRadio,
       selectedRowKeys,
       onChange: onSelectChange,
     };
-
+    /**
+     * 编辑
+     */
     const handleEdit = (record: any) => {
       setModelStatus(ModelStatus.EDIT);
       setEditingRecord(record);
       form.setFieldsValue(record);
       setModalOpen(true);
     };
+    /**
+     * 新增
+     */
 
     const handleAdd = () => {
       setModelStatus(ModelStatus.ADD);
@@ -564,19 +586,22 @@ const CrudComponent = forwardRef<CrudExposeMethods, ICrudProps>(
       setEditingRecord(null);
       setModalOpen(true);
     };
-
+    /**
+     * 查看
+     */
     const handleView = (record: any) => {
-      console.log("record", record);
+
       setModelStatus(ModelStatus.VIEW);
       // setEditingRecord(record);
       form.setFieldsValue(record);
       setModalOpen(true);
     };
-
+    /**
+     * 删除
+     */
     const handleDelete = async (record: any) => {
       await onDelete([record[primaryKey]]);
     };
-
     /**
      * 暴露方法
      */
@@ -623,7 +648,7 @@ const CrudComponent = forwardRef<CrudExposeMethods, ICrudProps>(
             showSizeChanger: true,
             showQuickJumper: true,
             showTotal: (total) => `共 ${total} 条`,
-            pageSizeOptions: ["2", "3", "10", "20"],
+            pageSizeOptions:pagination.pageSizeOptions ||  ["10", "20", "50", "100"],
             onChange: pagination.handlePageChange,
             onShowSizeChange: pagination.handleSizeChange,
           }}
@@ -634,7 +659,7 @@ const CrudComponent = forwardRef<CrudExposeMethods, ICrudProps>(
         <Modal
           width={800}
           open={modalOpen}
-          title={editingRecord ? `编辑` : `新增`}
+          title={showModelTitle()}
           onCancel={() => {
             setModalOpen(false);
             form.resetFields();
